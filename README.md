@@ -30,7 +30,7 @@ $ java -jar out/artifacts/my_utility_jar/my-utility.jar $HOME/Downloads/tensorfl
 ```
 
 ### Result
-It prints output with tuple
+It prints output with tuple in descending order based on number of uses of the each sentences.
 
 On each line, first one represents most used sentence, second one represensts number of uses of the sentence
 
