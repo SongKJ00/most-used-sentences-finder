@@ -2,6 +2,18 @@ import java.io._
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.text.PDFTextStripper
 
+object Functions {
+  def thread[T](item: T) = new ThreadFunctor(item)
+}
+
+class ThreadFunctor[T](val item: T) {
+  def andThen[A](f: T => A): ThreadFunctor[A] = new ThreadFunctor(f(item))
+}
+
+object ThreadFunctor {
+  implicit def threadToItem[T](thread: ThreadFunctor[T]): T = thread.item
+}
+
 object main {
   def main(args: Array[String]): Unit = {
     val filename = args(0)
@@ -9,10 +21,14 @@ object main {
     val text = getTextFromPdf(filename)
     text match {
       case Right(x) =>
-        printResult(
-          sortTextCount(
-            getTextCount(
-              getSpiltedText(x, '\n'))).take(numToGet))
+        val result = Functions.thread(x)
+                              .andThen(getSpiltedText(_, '\n'))
+                              .andThen(getTextCount)
+                              .andThen(sortTextCount)
+                              .take(numToGet)
+
+        printResult(result)
+
       case Left(x) => println(x.getMessage)
     }
   }
